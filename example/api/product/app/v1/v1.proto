@@ -5,7 +5,16 @@ option go_package = "github.com/mohuishou/protoc-gen-go-gin/example/api/product/
 package product.app.v1;
 
 import "google/api/annotations.proto";
+import "google/errors/errors.proto";
+import "google/validate/validate.proto";
 
+enum ErrorReason {
+
+	option (errors.default_code) = 500;
+
+	UNKNOWN = 0 [(errors.code) = 500];
+	PARAM_ERROR = 1 [(errors.code) = 400];
+}
 // blog service is a blog demo
 service BlogService {
 	rpc GetArticles(GetArticlesReq) returns (GetArticlesResp) {
@@ -35,7 +44,7 @@ message GetArticlesReq {
 	int32 page_size = 3;
 
 	// @inject_tag: form:"author_id" uri:"author_id"
-	int32 author_id = 4;
+	int32 author_id = 4 [(validate.rules).int32 = {gt: 0}];
 }
 
 message GetArticlesResp {

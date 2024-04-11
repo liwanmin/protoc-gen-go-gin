@@ -4,15 +4,18 @@ package v1
 
 import (
 	context "context"
-	errors "errors"
 	gin "github.com/gin-gonic/gin"
 	metadata "google.golang.org/grpc/metadata"
+)
+
+import (
+	kgin "github.com/go-kratos/gin"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the mohuishou/protoc-gen-go-gin package it is being compiled against.
 // context.metadata.
-//gin.errors.
+//gin.
 
 type BlogServiceHTTPServer interface {
 	CreateArticle(context.Context, *Article) (*Article, error)
@@ -33,8 +36,6 @@ type BlogService struct {
 	server BlogServiceHTTPServer
 	router gin.IRouter
 	resp   interface {
-		Error(ctx *gin.Context, err error)
-		ParamsError(ctx *gin.Context, err error)
 		Success(ctx *gin.Context, data interface{})
 	}
 }
@@ -50,42 +51,6 @@ func (resp defaultBlogServiceResp) response(ctx *gin.Context, status, code int, 
 	})
 }
 
-// Error 返回错误信息
-func (resp defaultBlogServiceResp) Error(ctx *gin.Context, err error) {
-	code := -1
-	status := 500
-	msg := "未知错误"
-
-	if err == nil {
-		msg += ", err is nil"
-		resp.response(ctx, status, code, msg, nil)
-		return
-	}
-
-	type iCode interface {
-		HTTPCode() int
-		Message() string
-		Code() int
-	}
-
-	var c iCode
-	if errors.As(err, &c) {
-		status = c.HTTPCode()
-		code = c.Code()
-		msg = c.Message()
-	}
-
-	_ = ctx.Error(err)
-
-	resp.response(ctx, status, code, msg, nil)
-}
-
-// ParamsError 参数错误
-func (resp defaultBlogServiceResp) ParamsError(ctx *gin.Context, err error) {
-	_ = ctx.Error(err)
-	resp.response(ctx, 400, 400, "参数错误", nil)
-}
-
 // Success 返回成功信息
 func (resp defaultBlogServiceResp) Success(ctx *gin.Context, data interface{}) {
 	resp.response(ctx, 200, 0, "成功", data)
@@ -95,15 +60,19 @@ func (s *BlogService) GetArticles_0(ctx *gin.Context) {
 	var in GetArticlesReq
 
 	if err := ctx.ShouldBindUri(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
+		kgin.Error(ctx, ErrorParamError(err.Error()))
 		return
 	}
 
 	if err := ctx.ShouldBindQuery(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
+		kgin.Error(ctx, ErrorParamError(err.Error()))
 		return
 	}
 
+	if err := in.ValidateAll(); err != nil {
+		kgin.Error(ctx, ErrorParamError(err.Error()))
+		return
+	}
 	md := metadata.New(nil)
 	for k, v := range ctx.Request.Header {
 		md.Set(k, v...)
@@ -111,7 +80,7 @@ func (s *BlogService) GetArticles_0(ctx *gin.Context) {
 	newCtx := metadata.NewIncomingContext(ctx, md)
 	out, err := s.server.(BlogServiceHTTPServer).GetArticles(newCtx, &in)
 	if err != nil {
-		s.resp.Error(ctx, err)
+		kgin.Error(ctx, err)
 		return
 	}
 
@@ -122,10 +91,14 @@ func (s *BlogService) GetArticles_1(ctx *gin.Context) {
 	var in GetArticlesReq
 
 	if err := ctx.ShouldBindQuery(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
+		kgin.Error(ctx, ErrorParamError(err.Error()))
 		return
 	}
 
+	if err := in.ValidateAll(); err != nil {
+		kgin.Error(ctx, ErrorParamError(err.Error()))
+		return
+	}
 	md := metadata.New(nil)
 	for k, v := range ctx.Request.Header {
 		md.Set(k, v...)
@@ -133,7 +106,7 @@ func (s *BlogService) GetArticles_1(ctx *gin.Context) {
 	newCtx := metadata.NewIncomingContext(ctx, md)
 	out, err := s.server.(BlogServiceHTTPServer).GetArticles(newCtx, &in)
 	if err != nil {
-		s.resp.Error(ctx, err)
+		kgin.Error(ctx, err)
 		return
 	}
 
@@ -144,15 +117,19 @@ func (s *BlogService) CreateArticle_0(ctx *gin.Context) {
 	var in Article
 
 	if err := ctx.ShouldBindUri(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
+		kgin.Error(ctx, ErrorParamError(err.Error()))
 		return
 	}
 
 	if err := ctx.ShouldBindJSON(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
+		kgin.Error(ctx, ErrorParamError(err.Error()))
 		return
 	}
 
+	if err := in.ValidateAll(); err != nil {
+		kgin.Error(ctx, ErrorParamError(err.Error()))
+		return
+	}
 	md := metadata.New(nil)
 	for k, v := range ctx.Request.Header {
 		md.Set(k, v...)
@@ -160,7 +137,7 @@ func (s *BlogService) CreateArticle_0(ctx *gin.Context) {
 	newCtx := metadata.NewIncomingContext(ctx, md)
 	out, err := s.server.(BlogServiceHTTPServer).CreateArticle(newCtx, &in)
 	if err != nil {
-		s.resp.Error(ctx, err)
+		kgin.Error(ctx, err)
 		return
 	}
 

@@ -14,7 +14,7 @@ import (
 const (
 	contextPkg         = protogen.GoImportPath("context")
 	ginPkg             = protogen.GoImportPath("github.com/gin-gonic/gin")
-	errPkg             = protogen.GoImportPath("errors")
+	kginPkg            = protogen.GoImportPath("github.com/go-kratos/gin")
 	metadataPkg        = protogen.GoImportPath("google.golang.org/grpc/metadata")
 	deprecationComment = "// Deprecated: Do not use."
 )
@@ -32,10 +32,14 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P()
 	g.P("package ", file.GoPackageName)
 	g.P()
+	g.P("import (")
+	g.P("kgin", " ", kginPkg)
+	g.P(")")
+	g.P()
 	g.P("// This is a compile-time assertion to ensure that this generated file")
 	g.P("// is compatible with the mohuishou/protoc-gen-go-gin package it is being compiled against.")
 	g.P("// ", contextPkg.Ident(""), metadataPkg.Ident(""))
-	g.P("//", ginPkg.Ident(""), errPkg.Ident(""))
+	g.P("//", ginPkg.Ident(""))
 	g.P()
 
 	for _, service := range file.Services {

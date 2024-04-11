@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,8 +21,9 @@ func (s service) CreateArticle(ctx context.Context, article *v1.Article) (*v1.Ar
 }
 
 func (s service) GetArticles(ctx context.Context, req *v1.GetArticlesReq) (*v1.GetArticlesResp, error) {
-	if req.AuthorId < 0 {
-		return nil, ecode.Errorf(http.StatusBadRequest, 400, "author id must >= 0")
+	fmt.Println(req.GetAuthorId())
+	if req.AuthorId <= 0 {
+		return nil, v1.ErrorParamError("author id must >= 0")
 	}
 	return &v1.GetArticlesResp{
 		Total: 1,
@@ -38,5 +40,8 @@ func (s service) GetArticles(ctx context.Context, req *v1.GetArticlesReq) (*v1.G
 func main() {
 	e := gin.Default()
 	v1.RegisterBlogServiceHTTPServer(e, &service{})
-	e.Run()
+	err := e.Run(":8000")
+	if err != nil {
+		return
+	}
 }

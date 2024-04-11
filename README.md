@@ -14,7 +14,7 @@
 注意由于使用 embed 特性，Go 版本必须大于 1.16
 
 ```bash
-go install github.com/mohuishou/protoc-gen-go-gin@latest
+go install github.com/liwanmin/protoc-gen-go-gin@latest
 ```
 
 ## 使用说明
@@ -60,10 +60,14 @@ service BlogService {
 ### 文件生成
 
 ```bash
-  protoc -I ./example/api \
-  --go_out ./example/api --go_opt=paths=source_relative \
-  --go-gin_out ./example/api --go-gin_opt=paths=source_relative \
-  example/api/product/app/v1/v1.proto
+ 	protoc -I ./example/api \
+    --openapi_out=fq_schema_naming=true,default_response=false:. \
+	--go_out ./example/api --go_opt=paths=source_relative \
+	--go-gin_out ./example/api --go-gin_opt=paths=source_relative \
+	--go-errors_out=paths=source_relative:./example/api \
+	--validate_out=paths=source_relative,lang=go:./example/api \
+	example/api/product/app/v1/v1.proto
+	protoc-go-inject-tag -input=./example/api/product/app/v1/v1.pb.go
 ```
 
 ## 相关介绍

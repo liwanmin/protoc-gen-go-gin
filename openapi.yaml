@@ -1,0 +1,133 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: BlogService API
+    description: blog service is a blog demo
+    version: 0.0.1
+paths:
+    /v1/articles:
+        get:
+            tags:
+                - BlogService
+            operationId: BlogService_GetArticles
+            parameters:
+                - name: title
+                  in: query
+                  description: '@inject_tag: form:"title"'
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  description: '@inject_tag: form:"page"'
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  description: '@inject_tag: form:"page_size"'
+                  schema:
+                    type: integer
+                    format: int32
+                - name: authorId
+                  in: query
+                  description: '@inject_tag: form:"author_id" uri:"author_id"'
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/product.app.v1.GetArticlesResp'
+    /v1/author/{authorId}/articles:
+        get:
+            tags:
+                - BlogService
+            operationId: BlogService_GetArticles
+            parameters:
+                - name: authorId
+                  in: path
+                  description: '@inject_tag: form:"author_id" uri:"author_id"'
+                  required: true
+                  schema:
+                    type: integer
+                    format: int32
+                - name: title
+                  in: query
+                  description: '@inject_tag: form:"title"'
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  description: '@inject_tag: form:"page"'
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  description: '@inject_tag: form:"page_size"'
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/product.app.v1.GetArticlesResp'
+        post:
+            tags:
+                - BlogService
+            operationId: BlogService_CreateArticle
+            parameters:
+                - name: authorId
+                  in: path
+                  description: '@inject_tag: form:"author_id" uri:"author_id"'
+                  required: true
+                  schema:
+                    type: integer
+                    format: int32
+                - name: title
+                  in: query
+                  schema:
+                    type: string
+                - name: content
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/product.app.v1.Article'
+components:
+    schemas:
+        product.app.v1.Article:
+            type: object
+            properties:
+                title:
+                    type: string
+                content:
+                    type: string
+                authorId:
+                    type: integer
+                    description: '@inject_tag: form:"author_id" uri:"author_id"'
+                    format: int32
+        product.app.v1.GetArticlesResp:
+            type: object
+            properties:
+                total:
+                    type: string
+                articles:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/product.app.v1.Article'
+tags:
+    - name: BlogService
